@@ -4,14 +4,12 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>DangGu&#39;s Life</title>
+    <title>一些面试可能会问到的问题 | DangGu&#39;s Life</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="DangGu">
     
-    <meta name="description" content="title: 一些面试可能会问到的问题date: 2014-10-12 21:01:25
-tags:面试知识
-不使用中间变量交换两个数的值
+    <meta name="description" content="不使用中间变量交换两个数的值
 一、 加减法
 //加减法
 a=a+b
@@ -26,7 +24,8 @@ a=a*b
 b=a/b
 a=a/b
 
-">
+缺点：浮点型可能会发生精度损失，且b必不为0
+以上两种方法都可能会发生溢出，但是在后面做减法和做除法的时候会将">
     
     
     
@@ -84,15 +83,15 @@ a=a/b
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/10/12/一些面试可能会问到的问题/" title="" itemprop="url"></a>
+      <a href="/2014/10/12/一些面试可能会问到的问题/" title="一些面试可能会问到的问题" itemprop="url">一些面试可能会问到的问题</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://yoursite.com" title="DangGu">DangGu</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-10-12T13:03:21.000Z" itemprop="datePublished">10月 12 2014</time>
-    Updated:<time datetime="2014-10-12T13:03:21.000Z" itemprop="dateModified">10月 12 2014</time>
+    <time datetime="2014-10-12T13:01:25.000Z" itemprop="datePublished">10月 12 2014</time>
+    Updated:<time datetime="2014-10-12T13:05:21.000Z" itemprop="dateModified">10月 12 2014</time>
     
   </p>
 </header>
@@ -101,12 +100,10 @@ a=a/b
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">Contents</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#tags:面试知识"><span class="toc-number">1.</span> <span class="toc-text">tags:面试知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不使用中间变量交换两个数的值"><span class="toc-number">2.</span> <span class="toc-text">不使用中间变量交换两个数的值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、_加减法"><span class="toc-number">2.0.1.</span> <span class="toc-text">一、 加减法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、乘除法"><span class="toc-number">2.0.2.</span> <span class="toc-text">二、乘除法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、异或法"><span class="toc-number">2.0.3.</span> <span class="toc-text">三、异或法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#网络体系结构"><span class="toc-number">3.</span> <span class="toc-text">网络体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、物理层"><span class="toc-number">3.1.</span> <span class="toc-text">一、物理层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据链路层"><span class="toc-number">3.2.</span> <span class="toc-text">二、数据链路层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、网络层"><span class="toc-number">3.3.</span> <span class="toc-text">三、网络层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、传输层"><span class="toc-number">3.4.</span> <span class="toc-text">四、传输层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、会话层"><span class="toc-number">3.5.</span> <span class="toc-text">五、会话层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#六、表示层"><span class="toc-number">3.6.</span> <span class="toc-text">六、表示层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#七、应用层"><span class="toc-number">3.7.</span> <span class="toc-text">七、应用层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP三次握手"><span class="toc-number">4.</span> <span class="toc-text">TCP三次握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多态"><span class="toc-number">5.</span> <span class="toc-text">多态</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#不使用中间变量交换两个数的值"><span class="toc-number">1.</span> <span class="toc-text">不使用中间变量交换两个数的值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、_加减法"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、 加减法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、乘除法"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、乘除法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、异或法"><span class="toc-number">1.0.3.</span> <span class="toc-text">三、异或法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#网络体系结构"><span class="toc-number">2.</span> <span class="toc-text">网络体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、物理层"><span class="toc-number">2.1.</span> <span class="toc-text">一、物理层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据链路层"><span class="toc-number">2.2.</span> <span class="toc-text">二、数据链路层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、网络层"><span class="toc-number">2.3.</span> <span class="toc-text">三、网络层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、传输层"><span class="toc-number">2.4.</span> <span class="toc-text">四、传输层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、会话层"><span class="toc-number">2.5.</span> <span class="toc-text">五、会话层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#六、表示层"><span class="toc-number">2.6.</span> <span class="toc-text">六、表示层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#七、应用层"><span class="toc-number">2.7.</span> <span class="toc-text">七、应用层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP三次握手"><span class="toc-number">3.</span> <span class="toc-text">TCP三次握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多态"><span class="toc-number">4.</span> <span class="toc-text">多态</span></a></li></ol>
 		</div>
 		
-		<p>title: 一些面试可能会问到的问题<br>date: 2014-10-12 21:01:25</p>
-<h2 id="tags:面试知识">tags:面试知识</h2>
-<h2 id="不使用中间变量交换两个数的值">不使用中间变量交换两个数的值</h2>
+		<h2 id="不使用中间变量交换两个数的值">不使用中间变量交换两个数的值</h2>
 <h4 id="一、_加减法">一、 加减法</h4>
 <pre><code>//加减法
 <span class="operator">a</span>=<span class="operator">a</span>+b
@@ -157,12 +154,17 @@ b^=<span class="operator">a</span>
 	</div>
 		<footer class="article-footer clearfix">
 
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/面试知识/">面试知识</a>
+  </div>
+
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://yoursite.com/2014/10/12/一些面试可能会问到的问题/" data-title="DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  <div data-url="http://yoursite.com/2014/10/12/一些面试可能会问到的问题/" data-title="一些面试可能会问到的问题 | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -188,7 +190,7 @@ b^=<span class="operator">a</span>
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">Contents</strong>
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#tags:面试知识"><span class="toc-number">1.</span> <span class="toc-text">tags:面试知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不使用中间变量交换两个数的值"><span class="toc-number">2.</span> <span class="toc-text">不使用中间变量交换两个数的值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、_加减法"><span class="toc-number">2.0.1.</span> <span class="toc-text">一、 加减法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、乘除法"><span class="toc-number">2.0.2.</span> <span class="toc-text">二、乘除法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、异或法"><span class="toc-number">2.0.3.</span> <span class="toc-text">三、异或法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#网络体系结构"><span class="toc-number">3.</span> <span class="toc-text">网络体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、物理层"><span class="toc-number">3.1.</span> <span class="toc-text">一、物理层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据链路层"><span class="toc-number">3.2.</span> <span class="toc-text">二、数据链路层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、网络层"><span class="toc-number">3.3.</span> <span class="toc-text">三、网络层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、传输层"><span class="toc-number">3.4.</span> <span class="toc-text">四、传输层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、会话层"><span class="toc-number">3.5.</span> <span class="toc-text">五、会话层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#六、表示层"><span class="toc-number">3.6.</span> <span class="toc-text">六、表示层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#七、应用层"><span class="toc-number">3.7.</span> <span class="toc-text">七、应用层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP三次握手"><span class="toc-number">4.</span> <span class="toc-text">TCP三次握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多态"><span class="toc-number">5.</span> <span class="toc-text">多态</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#不使用中间变量交换两个数的值"><span class="toc-number">1.</span> <span class="toc-text">不使用中间变量交换两个数的值</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、_加减法"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、 加减法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、乘除法"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、乘除法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、异或法"><span class="toc-number">1.0.3.</span> <span class="toc-text">三、异或法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#网络体系结构"><span class="toc-number">2.</span> <span class="toc-text">网络体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、物理层"><span class="toc-number">2.1.</span> <span class="toc-text">一、物理层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据链路层"><span class="toc-number">2.2.</span> <span class="toc-text">二、数据链路层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、网络层"><span class="toc-number">2.3.</span> <span class="toc-text">三、网络层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、传输层"><span class="toc-number">2.4.</span> <span class="toc-text">四、传输层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#五、会话层"><span class="toc-number">2.5.</span> <span class="toc-text">五、会话层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#六、表示层"><span class="toc-number">2.6.</span> <span class="toc-text">六、表示层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#七、应用层"><span class="toc-number">2.7.</span> <span class="toc-text">七、应用层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP三次握手"><span class="toc-number">3.</span> <span class="toc-text">TCP三次握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多态"><span class="toc-number">4.</span> <span class="toc-text">多态</span></a></li></ol>
   </div>
 
 <div id="asidepart">
@@ -203,6 +205,8 @@ b^=<span class="operator">a</span>
 		<ul class="clearfix">
 		
 			<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		
+			<li><a href="/tags/面试知识/" title="面试知识">面试知识<sup>1</sup></a></li>
 		
 		</ul>
 </div>
