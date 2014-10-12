@@ -1,0 +1,393 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C++虚基类、虚函数和纯虚函数的区别 | DangGu&#39;s Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="DangGu">
+    
+    <meta name="description" content="虚基类，虚函数，纯虚函数
+虚基类
+class A
+{
+    public:
+    int iValue;
+};
+class B:virtual public A
+{
+    public:
+    void bPrint(){cout&amp;lt;&amp;lt;&quot;This is Class B&quot;&amp;lt;&amp;l">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="DangGu&#39;s Life" title="DangGu&#39;s Life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="DangGu&#39;s Life">DangGu&#39;s Life</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/12/C-虚基类、虚函数和纯虚函数的区别/" title="C++虚基类、虚函数和纯虚函数的区别" itemprop="url">C++虚基类、虚函数和纯虚函数的区别</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="DangGu">DangGu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-10-12T13:14:06.000Z" itemprop="datePublished">10月 12 2014</time>
+    Updated:<time datetime="2014-10-12T13:16:14.000Z" itemprop="dateModified">10月 12 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#虚基类，虚函数，纯虚函数"><span class="toc-number">1.</span> <span class="toc-text">虚基类，虚函数，纯虚函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#虚基类"><span class="toc-number">1.1.</span> <span class="toc-text">虚基类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#虚函数"><span class="toc-number">1.2.</span> <span class="toc-text">虚函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#纯虚函数"><span class="toc-number">1.3.</span> <span class="toc-text">纯虚函数</span></a></li></ol></li></ol>
+		</div>
+		
+		<h3 id="虚基类，虚函数，纯虚函数">虚基类，虚函数，纯虚函数</h3>
+<h4 id="虚基类">虚基类</h4>
+<pre><code>class A
+{
+    <span class="keyword">public</span>:
+    <span class="keyword">int</span> iValue;
+};
+class B:<span class="keyword">virtual</span> <span class="keyword">public</span> A
+{
+    <span class="keyword">public</span>:
+    <span class="keyword">void</span> <span class="title">bPrint</span>(){cout&lt;&lt;<span class="string">"This is Class B"</span>&lt;&lt;endl;};
+}
+<span class="keyword">public</span> C:<span class="keyword">virtual</span> <span class="keyword">public</span> A
+{
+    <span class="keyword">public</span>:
+    <span class="keyword">void</span> <span class="title">cPrint</span>(){cout&lt;&lt;<span class="string">"This is Class C"</span>&lt;&lt;endl;};
+}
+<span class="keyword">public</span> D:<span class="keyword">public</span> B,<span class="keyword">public</span> C
+{
+    <span class="keyword">public</span>:
+    <span class="keyword">void</span> <span class="title">dPrint</span>(){cout&lt;&lt;<span class="string">"This is Class D"</span>&lt;&lt;endl;};
+}
+<span class="keyword">void</span> main()
+{
+    D d;
+    cout&lt;&lt;d.iValue&lt;&lt;endl;<span class="comment">//正确输出，使用虚基类的时候，只有一个副本A。</span>
+        <span class="comment">//如果不使用虚基类，这句代码会报错。</span>
+        <span class="comment">//他无法判断是B继承来得A得value还是C得。就只能加类型限定符。d.B::iValue或者d.A::iValue</span>
+}
+</code></pre><h4 id="虚函数">虚函数</h4>
+<pre><code>class A
+{
+<span class="keyword">public</span>:
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">funPrint</span>(){cout&lt;&lt;<span class="string">"funPrint of Class A"</span>&lt;&lt;endl;};
+}
+
+class B:<span class="keyword">public</span> A
+{
+<span class="keyword">public</span>:
+    <span class="keyword">void</span> <span class="title">funPrint</span>(){cout&lt;&lt;<span class="string">"funPrint of Class B"</span>&lt;&lt;endl;};
+}
+
+<span class="keyword">void</span> main()
+{
+    A *a1;
+    A a;
+    B b;
+    a1=&amp;a;
+    a1-&gt;funPrint();
+    a1=&amp;b;
+    a1-&gt;funPrint();
+}
+<span class="comment">//输出 "funPrint of Class A"</span>
+<span class="comment">//        "funPrint of Class B"</span>
+<span class="comment">//如果没有定义虚函数virtual,那么不过右边赋什么值，都是按左边的类型来进行调用，静态绑定，在编译的时候就已经完成了。如果加上virtual，就是动态绑定。</span>
+</code></pre><h4 id="纯虚函数">纯虚函数</h4>
+<blockquote>
+<p>纯虚函数只是定义了一个函数，让派生类去实现它</p>
+</blockquote>
+<pre><code>class Vehicle
+{
+<span class="keyword">public</span>:
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">PrintTyre</span>()=<span class="number">0</span>; <span class="comment">//纯虚函数是这样定义的</span>
+};
+
+class Camion:<span class="keyword">public</span> Vehicle
+{
+<span class="keyword">public</span>:
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">PrintTyre</span>(){cout&lt;&lt;<span class="string">"Camion tyre four"</span>&lt;&lt;endl;};
+};
+
+class Bike:<span class="keyword">public</span> Vehicle
+{
+<span class="keyword">public</span>:
+    <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">PrintTyre</span>(){cout&lt;&lt;<span class="string">"Bike tyre two"</span>&lt;&lt;endl;};
+};
+
+<span class="keyword">void</span> main()
+{
+    Camion c;
+    Bike b;
+    b.PrintTyre();
+    c.PrintTyre();
+}
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/CPP/">CPP</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2014/10/12/C-虚基类、虚函数和纯虚函数的区别/" data-title="C++虚基类、虚函数和纯虚函数的区别 | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/10/12/一些面试可能会问到的问题/"  title="一些面试可能会问到的问题">
+ <strong>NEXT:</strong><br/> 
+ <span>一些面试可能会问到的问题
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#虚基类，虚函数，纯虚函数"><span class="toc-number">1.</span> <span class="toc-text">虚基类，虚函数，纯虚函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#虚基类"><span class="toc-number">1.1.</span> <span class="toc-text">虚基类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#虚函数"><span class="toc-number">1.2.</span> <span class="toc-text">虚函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#纯虚函数"><span class="toc-number">1.3.</span> <span class="toc-text">纯虚函数</span></a></li></ol></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>0</sup></a></li>
+		
+			<li><a href="/tags/CPP/" title="CPP">CPP<sup>1</sup></a></li>
+		
+			<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		
+			<li><a href="/tags/面试知识/" title="面试知识">面试知识<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://yoursite.com" target="_blank" title="DangGu">DangGu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
