@@ -1,0 +1,446 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>IOS设计模式学习笔记-委托模式 | DangGu&#39;s Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="DangGu">
+    
+    <meta name="description" content="在IOS开发中，delegate（委托模式）是一种常见的模式。委托，顾名思义，即为将一些事情委托给别人做。在IOS开发中，即为把一些事情，委托给另一个类来做。
+例如：
+
+UITableViewDelegate中的方法就是控制TableView的外观。比如heightForRowAtIndexPath">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="DangGu&#39;s Life" title="DangGu&#39;s Life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="DangGu&#39;s Life">DangGu&#39;s Life</a></h1>
+				<h2 class="blog-motto">My Life is Brilliant</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/17/IOS设计模式学习笔记-委托模式/" title="IOS设计模式学习笔记-委托模式" itemprop="url">IOS设计模式学习笔记-委托模式</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="DangGu">DangGu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-10-17T07:56:42.000Z" itemprop="datePublished">10月 17 2014</time>
+    Updated:<time datetime="2014-10-17T07:57:17.000Z" itemprop="dateModified">10月 17 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+		</div>
+		
+		<p>在IOS开发中，delegate（委托模式）是一种常见的模式。委托，顾名思义，即为将一些事情委托给别人做。在IOS开发中，即为把一些事情，委托给另一个类来做。</p>
+<p>例如：</p>
+<ul>
+<li>UITableViewDelegate中的方法就是控制TableView的外观。比如heightForRowAtIndexPath这个方法就是控制TableView的行高。将这些方法交由委托类来实现</li>
+<li>UITableViewDataSource中得方法是控制TableView中显示的数据。比如cellForRowAtIndexPath就是控制每个Cell显示的数据内容。numberOfSectionsInTableView就是控制Section的个数。</li>
+</ul>
+<p>IOS中的委托，通过protocol来实现。接下来用一个例子，实现一个委托。</p>
+<p>一个经理每天要处理很多事务，但是一些简单的他会交给秘书去做，比如发传真，写一些文档，或者做一些【哔哔—-】的事情。(╯‵□′)╯︵┻━┻</p>
+<p>那我们首先定义一个ManagerDelegate.带有三个方法.</p>
+<pre><code><span class="comment">// ManagerDelegate.h</span>
+<span class="preprocessor">#import <span class="title">&lt;Foundation/Foundation.h&gt;</span></span>
+
+<span class="class"><span class="keyword">@protocol</span> <span class="title">ManagerDelegate</span> &lt;<span class="title">NSObject</span>&gt;</span>
+
+<span class="keyword">@required</span>
+
+-(<span class="keyword">void</span>)sendfax;
+-(<span class="keyword">void</span>)writeDocument;
+-(<span class="keyword">void</span>)doSomethingStrange;
+
+<span class="keyword">@end</span>
+</code></pre><p>接下来定义一个经理类Manager</p>
+<pre><code><span class="comment">// Manager.h</span>
+<span class="preprocessor">#import <span class="title">&lt;Foundation/Foundation.h&gt;</span></span>
+<span class="preprocessor">#import <span class="title">"ManagerDelegate.h"</span></span>
+
+<span class="class"><span class="keyword">@interface</span> <span class="title">Manager</span> : <span class="title">NSObject</span></span>
+
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) NSTimer * timer;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">assign</span>) <span class="keyword">int</span> count;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">weak</span>) <span class="keyword">id</span>&lt;ManagerDelegate&gt; delegate;
+
+-(<span class="keyword">void</span>)startWork;
+-(<span class="keyword">void</span>)handle;
+
+<span class="keyword">@end</span>
+</code></pre><p>可以看到经理类有一个指向委托的弱引用.必须申明为id类型。</p>
+<p>下面是Manager.m </p>
+<pre><code><span class="comment">// Manager.m</span>
+<span class="preprocessor">#import <span class="title">"Manager.h"</span></span>
+
+<span class="class"><span class="keyword">@implementation</span> <span class="title">Manager</span></span>
+<span class="keyword">@synthesize</span> timer,count,delegate;
+
+-(<span class="keyword">void</span>)startWork{
+    <span class="keyword">self</span><span class="variable">.count</span>=<span class="number">0</span>;
+    <span class="keyword">self</span><span class="variable">.timer</span>=[NSTimer scheduledTimerWithTimeInterval:<span class="number">2.0</span> target:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(handle) userInfo:<span class="literal">nil</span> repeats:<span class="literal">YES</span>];
+}
+
+-(<span class="keyword">void</span>)handle{
+    <span class="keyword">switch</span> (count) {
+        <span class="keyword">case</span> <span class="number">0</span>:
+            [delegate sendfax];
+            count++;
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">1</span>:
+            [delegate writeDocument];
+            count++;
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">2</span>:
+            [delegate doSomethingStrange];
+            [timer invalidate];
+            <span class="keyword">break</span>;
+        <span class="keyword">default</span>:
+            <span class="keyword">break</span>;
+    }
+}
+<span class="keyword">@end</span>
+</code></pre><p>可以看到在经理的方法里，会使用委托对象的方法，因为他会委托给秘书sendfax,writeDocument and doSomethingStrange!!</p>
+<p>接下来声明这个秘书啦！！！但是这是个ViewController~（(╯‵□′)╯︵┻━┻ 为什么秘书是ViewController!!!!因为要看得见摸得着能操作嘛！）</p>
+<pre><code><span class="comment">// ViewController.h</span>
+<span class="preprocessor">#import <span class="title">&lt;UIKit/UIKit.h&gt;</span></span>
+<span class="preprocessor">#import <span class="title">"Manager.h"</span></span>
+<span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> : <span class="title">UIViewController</span>&lt;<span class="title">ManagerDelegate</span>&gt;</span>
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">UIButton</span> * startButton;<span class="comment">//用来控制开始工作的按钮</span>
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) Manager * manager;
+<span class="keyword">@end</span>
+</code></pre><p>ViewController要实现这个委托，在父类后面用尖括号&lt;&gt;包含委托名。。。经理的委托！<br>接下来在ViewController中，必须实现委托的三个方法 分别是sendfax writeDocument doSomethingStrange.</p>
+<pre><code><span class="function">-</span>(void)sendfax{
+    <span class="function">NSLog</span>(<span class="at_rule">@<span class="string">"the secretary is sending the fax"</span>);</span>
+}
+<span class="function">-</span>(void)writeDocument{
+    <span class="function">NSLog</span>(<span class="at_rule">@<span class="string">"the secretary is writing the documents"</span>);</span>
+}
+<span class="function">-</span>(void)doSomethingStrange{
+    <span class="function">NSLog</span>(<span class="at_rule">@<span class="string">"What is Strange things?!"</span>);</span>
+}
+</code></pre><p>然后在ViewController里，需要初始化一个Manager的对象，然后将此Manager的委托指向这个ViewController.意思就是，将这个经理的委托，给这个秘书来做。</p>
+<pre><code>manager=[[<span class="type">Manager</span> alloc] <span class="keyword">init</span>];
+manager.delegate=<span class="keyword">self</span>;
+</code></pre><p>以下是ViewController的完整代码：</p>
+<pre><code><span class="comment">// ViewController.m</span>
+<span class="preprocessor">#import <span class="title">"ViewController.h"</span></span>
+
+<span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span>
+
+<span class="keyword">@end</span>
+
+<span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span>
+<span class="keyword">@synthesize</span> startButton,manager;
+- (<span class="keyword">void</span>)viewDidLoad {
+    [<span class="keyword">super</span> viewDidLoad];
+
+    manager=[[Manager alloc] init];
+    manager<span class="variable">.delegate</span>=<span class="keyword">self</span>;
+
+    [<span class="keyword">self</span><span class="variable">.view</span> setBackgroundColor:[<span class="built_in">UIColor</span> whiteColor]];
+
+    <span class="comment">//Button 初始化</span>
+    startButton=[<span class="built_in">UIButton</span> buttonWithType:UIButtonTypeRoundedRect];
+    [startButton setFrame:CGRectMake(<span class="number">100</span>, <span class="number">200</span>, <span class="number">100</span>, <span class="number">50</span>)];
+    [startButton setBackgroundColor:[<span class="built_in">UIColor</span> colorWithRed:<span class="number">37.0</span>/<span class="number">255.0</span>f green:<span class="number">192.0</span>/<span class="number">255.0</span>f blue:<span class="number">166.0</span>/<span class="number">255.0</span>f alpha:<span class="number">1.0</span>]];
+    [startButton setTitle:<span class="string">@"StarWork"</span> forState:UIControlStateNormal];
+    [startButton addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(secretaryWork) forControlEvents:UIControlEventTouchUpInside];
+    [<span class="keyword">self</span><span class="variable">.view</span> addSubview:startButton];
+}
+-(<span class="keyword">void</span>)secretaryWork{
+    [manager startWork];
+}
+<span class="preprocessor">#pragma mark -</span>
+-(<span class="keyword">void</span>)sendfax{
+    <span class="built_in">NSLog</span>(<span class="string">@"the secretary is sending the fax"</span>);
+}
+-(<span class="keyword">void</span>)writeDocument{
+    <span class="built_in">NSLog</span>(<span class="string">@"the secretary is writing the documents"</span>);
+}
+-(<span class="keyword">void</span>)doSomethingStrange{
+    <span class="built_in">NSLog</span>(<span class="string">@"What is Strange things?!"</span>);
+}
+- (<span class="keyword">void</span>)didReceiveMemoryWarning {
+    [<span class="keyword">super</span> didReceiveMemoryWarning];
+}
+
+<span class="keyword">@end</span>
+</code></pre><p>完整代码可以在我的<a href="https://github.com/StormXX/IOSPatternLearning" title="点我点我！" target="_blank" rel="external">github</a>上下载</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/IOS/">IOS</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2014/10/17/IOS设计模式学习笔记-委托模式/" data-title="IOS设计模式学习笔记-委托模式 | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/10/12/C-虚基类、虚函数和纯虚函数的区别/"  title="C++虚基类、虚函数和纯虚函数的区别">
+ <strong>NEXT:</strong><br/> 
+ <span>C++虚基类、虚函数和纯虚函数的区别
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/IOS/" title="IOS">IOS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		
+			<li><a href="/tags/面试知识/" title="面试知识">面试知识<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello,I&#39;m DangGu.My Github is StormXX. <br/>
+			I&#39;m interested in IOS development and I will share you about this and other knowledge</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/treature" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/StormXX" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://yoursite.com" target="_blank" title="DangGu">DangGu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
