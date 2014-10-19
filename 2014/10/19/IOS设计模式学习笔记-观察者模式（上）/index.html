@@ -77,7 +77,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-10-19T03:03:02.000Z" itemprop="datePublished">10月 19 2014</time>
-    Updated:<time datetime="2014-10-19T03:04:12.000Z" itemprop="dateModified">10月 19 2014</time>
+    Updated:<time datetime="2014-10-19T03:06:18.000Z" itemprop="dateModified">10月 19 2014</time>
     
   </p>
 </header>
@@ -86,7 +86,7 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">Contents</strong>
-		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSNotification"><span class="toc-number">1.</span> <span class="toc-text">NSNotification</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSNotification简单介绍"><span class="toc-number">1.1.</span> <span class="toc-text">NSNotification简单介绍</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ヾ(￣▽￣)Bye~Bye~"><span class="toc-number"></span> <span class="toc-text">ヾ(￣▽￣)Bye~Bye~</span></a>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NSNotification简单介绍"><span class="toc-number">1.</span> <span class="toc-text">NSNotification简单介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ヾ(￣▽￣)Bye~Bye~"><span class="toc-number">2.</span> <span class="toc-text">ヾ(￣▽￣)Bye~Bye~</span></a></li></ol>
 		</div>
 		
 		<p>IOS开发中，Observer(观察者模式)在很多地方使用。特别是传递值的时候，或者当某个Model的属性改变，从而使View来变化。</p>
@@ -99,8 +99,7 @@
 <p>下面用一个实例来介绍这两种方式的用法：</p>
 <p>用例：使用三个滑块，分别对应颜色的RGB值。通过改变RGB，来改变背景颜色。</p>
 <p><img src="http://stormxx-app-image.qiniudn.com/ObserverDemo.gif" alt="demo display"></p>
-<h3 id="NSNotification">NSNotification</h3>
-<h4 id="NSNotification简单介绍">NSNotification简单介绍</h4>
+<h2 id="NSNotification简单介绍">NSNotification简单介绍</h2>
 <p><em>该段摘自<a href="http://www.cnblogs.com/xunziji/p/3257447.html" target="_blank" rel="external">寻自己</a>的博客,原文地址：<a href="http://www.cnblogs.com/xunziji/p/3257447.html" target="_blank" rel="external">http://www.cnblogs.com/xunziji/p/3257447.html</a>，侵删</em></p>
 <p>  iOS 提供了一种 “同步的” 消息通知机制，观察者只要向消息中心注册， 即可接受其他对象发送来的消息，消息发送者和消息接受者两者可以互相一无所知，完全解耦。</p>
 <p>这种消息通知机制可以应用于任意时间和任何对象，观察者可以有多个，所以消息具有广播的性质，只是需要注意的是，观察者向消息中心注册以后，在不需要接受消息时需要向消息中心注销，这种消息广播机制是典型的“Observer”模式。</p>
@@ -274,7 +273,7 @@ float <span class="variable">minValue=</span><span class="number">0</span>,<span
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">Contents</strong>
-  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSNotification"><span class="toc-number">1.</span> <span class="toc-text">NSNotification</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSNotification简单介绍"><span class="toc-number">1.1.</span> <span class="toc-text">NSNotification简单介绍</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ヾ(￣▽￣)Bye~Bye~"><span class="toc-number"></span> <span class="toc-text">ヾ(￣▽￣)Bye~Bye~</span></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#NSNotification简单介绍"><span class="toc-number">1.</span> <span class="toc-text">NSNotification简单介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ヾ(￣▽￣)Bye~Bye~"><span class="toc-number">2.</span> <span class="toc-text">ヾ(￣▽￣)Bye~Bye~</span></a></li></ol>
   </div>
 
 <div id="asidepart">
