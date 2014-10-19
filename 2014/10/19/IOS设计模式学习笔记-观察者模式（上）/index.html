@@ -1,0 +1,450 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>IOS设计模式学习笔记-观察者模式（上） | DangGu&#39;s Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="DangGu">
+    
+    <meta name="description" content="IOS开发中，Observer(观察者模式)在很多地方使用。特别是传递值的时候，或者当某个Model的属性改变，从而使View来变化。
+观察者，顾名思义。就是一直在观察某个对象，当这个对象发生了一些让观察者感兴趣的改变，那么观察者就会做出相应的响应。类似与其他编程语言的“监听”。
+在IOS中实现观察">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="DangGu&#39;s Life" title="DangGu&#39;s Life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="DangGu&#39;s Life">DangGu&#39;s Life</a></h1>
+				<h2 class="blog-motto">My Life is Brilliant</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/19/IOS设计模式学习笔记-观察者模式（上）/" title="IOS设计模式学习笔记-观察者模式（上）" itemprop="url">IOS设计模式学习笔记-观察者模式（上）</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="DangGu">DangGu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-10-19T03:03:02.000Z" itemprop="datePublished">10月 19 2014</time>
+    Updated:<time datetime="2014-10-19T03:03:24.000Z" itemprop="dateModified">10月 19 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSNotification"><span class="toc-number">1.</span> <span class="toc-text">NSNotification</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSNotification简单介绍"><span class="toc-number">1.1.</span> <span class="toc-text">NSNotification简单介绍</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ヾ(￣▽￣)Bye~Bye~"><span class="toc-number"></span> <span class="toc-text">ヾ(￣▽￣)Bye~Bye~</span></a>
+		</div>
+		
+		<p>IOS开发中，Observer(观察者模式)在很多地方使用。特别是传递值的时候，或者当某个Model的属性改变，从而使View来变化。</p>
+<p>观察者，顾名思义。就是一直在观察某个对象，当这个对象发生了一些让观察者感兴趣的改变，那么观察者就会做出相应的响应。类似与其他编程语言的“监听”。</p>
+<p>在IOS中实现观察者模式有两种方法：</p>
+<ul>
+<li>NSNotification</li>
+<li>KVO(key-value observing)</li>
+</ul>
+<p>下面用一个实例来介绍这两种方式的用法：</p>
+<p>用例：使用三个滑块，分别对应颜色的RGB值。通过改变RGB，来改变背景颜色。</p>
+<p><img src="http://stormxx-app-image.qiniudn.com/ObserverDemo.gif" alt="demo display"></p>
+<h3 id="NSNotification">NSNotification</h3>
+<h4 id="NSNotification简单介绍">NSNotification简单介绍</h4>
+<p><em>该段摘自<a href="http://www.cnblogs.com/xunziji/p/3257447.html" target="_blank" rel="external">寻自己</a>的博客,原文地址：<a href="http://www.cnblogs.com/xunziji/p/3257447.html" target="_blank" rel="external">http://www.cnblogs.com/xunziji/p/3257447.html</a>，侵删</em></p>
+<p>  iOS 提供了一种 “同步的” 消息通知机制，观察者只要向消息中心注册， 即可接受其他对象发送来的消息，消息发送者和消息接受者两者可以互相一无所知，完全解耦。</p>
+<p>这种消息通知机制可以应用于任意时间和任何对象，观察者可以有多个，所以消息具有广播的性质，只是需要注意的是，观察者向消息中心注册以后，在不需要接受消息时需要向消息中心注销，这种消息广播机制是典型的“Observer”模式。</p>
+<p>这个要求其实也很容易实现. 每个运行中的application都有一个NSNotificationCenter的成员变量,它的功能就类似公共栏. 对象注册关注某个确定的notification(如果RGB改变，请告诉我). 我们把这些注册对象叫做 observer. 其它的一些对象会给center发送notifications(RGB改变了). center将该notifications转发给所有注册对该notification感兴趣的对象. 我们把这些发送notification的对象叫做 poster</p>
+<p>消息机制常常用于在向服务器端请求数据或者提交数据的场景，在和服务器端成功交互后，需要处理服务器端返回的数据，或发送响应消息等，就需要用到消息机制。</p>
+<p>接下来的实例会用到NSNotificationCenter,这是一个单例。在整个程序生命周期内只有一个实例。<br>获取方法为</p>
+<pre><code>[NSNotificationCenter defaultCenter]
+</code></pre><p>注册观察者的方法为</p>
+<pre><code><span class="pp">- <span class="params">(void)</span>addObserver:<span class="params">(id)</span>notificationObserver selector:<span class="params">(<span class="variable">SEL</span>)</span>notificationSelector name:<span class="params">(<span class="variable">NSString</span> *)</span>notificationName object:<span class="params">(id)</span>notificationSender</span>
+</code></pre><ul>
+<li>notificationObserver 观察者</li>
+<li>notificationSelector 处理消息的方法名</li>
+<li>notificationName 消息通知的名字</li>
+<li>notificationSender 消息发送者 : 表示接收哪个发送者的通知，如果第四个参数为nil,接收所有发送者的通知</li>
+</ul>
+<p>发送通知：</p>
+<pre><code><span class="pp">- <span class="params">(void)</span>postNotificationName:<span class="params">(<span class="variable">NSString</span> *)</span>notificationName object:<span class="params">(id)</span>notificationSender userInfo:<span class="params">(<span class="variable">NSDictionary</span> *)</span>userInfo</span>
+</code></pre><ul>
+<li>postNotificationName:消息通知的名字，对应于注册时的name</li>
+<li>object: 发送这个通知的对象</li>
+<li>userInfo : 是一个NSDictionary 可以用来传值</li>
+</ul>
+<p>移除观察者方法为</p>
+<pre><code><span class="pp">- <span class="params">(void)</span>removeObserver:<span class="params">(id)</span>notificationObserver name:<span class="params">(<span class="variable">NSString</span> *)</span>notificationName object:<span class="params">(id)</span>notificationSender</span>
+</code></pre><ul>
+<li>notificationObserver 观察者</li>
+<li>notificationName 消息通知的名字 ，对应注册时的名字</li>
+<li>notificationSender 消息发送者：如果为nil，移除所有发送者的通知</li>
+</ul>
+<p>NSNotificationCenter有好多注册方法，其中就有带有Block的。这个我们暂且不用。需要的可以去查看<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSNotificationCenter_Class/index.html" target="_blank" rel="external">苹果相关文档</a></p>
+<p>接下来看实例的代码，我们先定义一个背景颜色的Model</p>
+<pre><code><span class="comment">//bgColor.h</span>
+<span class="preprocessor">#import <span class="title">&lt;Foundation/Foundation.h&gt;</span></span>
+<span class="preprocessor">#import <span class="title">&lt;UIKit/UIKit.h&gt;</span></span>
+
+<span class="class"><span class="keyword">@interface</span> <span class="title">bgColor</span> : <span class="title">NSObject</span></span>
+
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">double</span> redColor;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">double</span> greenColor;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">double</span> blueColor;
+
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="built_in">UIColor</span> * color;
+
+<span class="keyword">@end</span>
+</code></pre><p>三个颜色的浮点值 red,green,blue 然后color 就是RGB生成的UIColor对象。<br>在bgColor.m中，重写color的get函数。</p>
+<pre><code>-(UIColor *)color{
+    <span class="keyword">return</span> [UIColor colorWithRed:_redColor/<span class="number">255.0f</span> green:_greenColor/<span class="number">255.0f</span> blue:_blueColor/<span class="number">255.0f</span> alpha:<span class="number">1</span>];
+}
+</code></pre><p>ColorModel写好后，我们来做View层，添加一个新的ViewController,命名为Notification(注：笔者这样命名其实不好，和类和相似，容易造成误导，但是为了和我github上的代码保持一致，所以博客也这样写，希望各位看官不要学习我！(╯‵□′)╯︵┻━┻)</p>
+<pre><code><span class="comment">//Notification.h</span>
+<span class="preprocessor">#import <span class="title">&lt;UIKit/UIKit.h&gt;</span></span>
+<span class="preprocessor">#import <span class="title">"bgColor.h"</span></span>
+<span class="class"><span class="keyword">@interface</span> <span class="title">Notification</span> : <span class="title">UIViewController</span></span>
+
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) UISlider * redSlide;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) UISlider * greenSlide;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) UISlider * blueSlide;
+
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) bgColor * bgcolor;
+<span class="keyword">@end</span>
+</code></pre><p>头文件里定义了三个UISlider控件，也就是滑块~（我的滑板鞋~时尚时尚最时尚~(✿◡‿◡)！摔！(╯‵□′)╯︵┻━┻，好好写博文！！）<br>笔者是用手写代码的控件，没有使用XIB或者storyboard.</p>
+<p>接下来在.m文件中(viewDidLoad里)，定义三个滑块的位置，滑块值的上限和下限,初始化Model(bgColor)：</p>
+<pre><code><span class="variable">bgcolor=</span>[[bgColor alloc] init];
+bgcolor.<span class="variable">redColor=</span><span class="number">0</span>;
+bgcolor.<span class="variable">greenColor=</span><span class="number">0</span>;
+bgcolor.<span class="variable">blueColor=</span><span class="number">0</span>;
+
+double <span class="variable">interval=</span><span class="number">10</span>,<span class="variable">magin_left=</span><span class="number">50</span>,<span class="variable">magin_top=</span><span class="number">150</span>;
+double <span class="variable">swidth=</span><span class="number">200</span>,<span class="variable">sheight=</span><span class="number">50</span>;
+float <span class="variable">minValue=</span><span class="number">0</span>,<span class="variable">maxValue=</span><span class="number">255</span>;
+
+//UISlider init
+<span class="variable">redSlide=</span>[[UISlider alloc] initWithFrame:CGRectMake(magin_left, magin_top, swidth, sheight)];
+<span class="variable">greenSlide=</span>[[UISlider alloc] initWithFrame:CGRectMake(magin_left, magin_top+(sheight+interval), swidth, sheight)];
+<span class="variable">blueSlide=</span>[[UISlider alloc] initWithFrame:CGRectMake(magin_left, magin_top+<span class="number">2</span>*(sheight+interval), swidth, sheight)];
+
+//UISlider's value set
+[redSlide setMinimumValue:minValue];
+[redSlide setMaximumValue:maxValue];
+[redSlide setContinuous:YES];
+[greenSlide setMinimumValue:minValue];
+[greenSlide setMaximumValue:maxValue];
+[greenSlide setContinuous:YES];
+[blueSlide setMinimumValue:minValue];
+[blueSlide setMaximumValue:maxValue];
+[blueSlide setContinuous:YES];
+
+//add to the main view
+[self.view addSubview:redSlide];
+[self.view addSubview:greenSlide];
+[self.view addSubview:blueSlide];
+</code></pre><p>因为滑块是控制三个值，所以我们要把滑块的值和bgColor的三个值绑定。</p>
+<pre><code><span class="comment">//UISlider value change</span>
+[redSlide addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+[greenSlide addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+[blueSlide addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+
+- (<span class="keyword">void</span>)sliderValueChanged:(UISlider *) slide{
+    <span class="keyword">if</span>(<span class="keyword">self</span><span class="variable">.redSlide</span>==slide){
+        bgcolor<span class="variable">.redColor</span>=slide<span class="variable">.value</span>;
+    }
+    <span class="keyword">if</span>(<span class="keyword">self</span><span class="variable">.greenSlide</span>==slide){
+        bgcolor<span class="variable">.greenColor</span>=slide<span class="variable">.value</span>;
+    }
+    <span class="keyword">if</span>(<span class="keyword">self</span><span class="variable">.blueSlide</span>==slide){
+        bgcolor<span class="variable">.blueColor</span>=slide<span class="variable">.value</span>;
+    }
+}
+</code></pre><p>现在运行APP，可以发现RGB的值改变了，但是背景没有变化，因为我们没有将背景颜色和RGB绑定（其实说绑定这个词不太合理，反正就是酱紫个意思~(≧▽≦)/~啦啦啦）</p>
+<p>接下来，我们注册一个观察者，在viewDidLoad中添加:</p>
+<pre><code><span class="attr_selector">[[NSNotificationCenter defaultCenter]</span> <span class="tag">addObserver</span><span class="pseudo">:self</span> <span class="tag">selector</span>:<span class="at_rule">@<span class="keyword">selector(getColor:)</span> name:@<span class="string">"Notification_Color"</span> object:nil]</span>;
+</code></pre><p>这个函数的意思是，向通知中心添加一个观察者，当名为“Notification_Color”的通知发过来的时候，self这个观察者接到这个通知，并且调用getColor方法.（getColor方法稍后说明）</p>
+<p>接下来，我们需要当某一个RGB值改变的时候，会发送一次通知。我们拿红色Red来举例说明。当你改变代表红色的值的滑块的时候，红色的值改变，你需要做出相应背景颜色的改变。所以，当滑块的改变红色的值的时候，发送一次通知。 了解了这些之后，我们就来重写setRedColor方法（这是@property自动生成的方法，但是开发者可以对其进行重写）。</p>
+<pre><code><span class="comment">//bgColor.m</span>
+-(<span class="keyword">void</span>)setRedColor:(<span class="keyword">double</span>)redColor{
+        _redColor=redColor;
+        [[<span class="built_in">NSNotificationCenter</span> defaultCenter] postNotificationName:<span class="string">@"Notification_Color"</span> object:<span class="literal">nil</span> userInfo:[<span class="built_in">NSDictionary</span> dictionaryWithObject:<span class="keyword">self</span><span class="variable">.color</span> forKey:<span class="string">@"color"</span>]];
+}
+</code></pre><p>绿色和蓝色同理。这个意思是，先把新的值赋给redColor.然后发送一次名为”Notification_Color”的通知（和上面注册时的名字相同）,带有一个NSDictionary的字典，里面是新的UIColor的值。</p>
+<p>接下来，回到Notification.m中，来写getColor:函数。</p>
+<pre><code>//<span class="type">Notification</span>.m
+-(<span class="type">void</span>)getColor:(<span class="type">NSNotification</span> *) <span class="keyword">not</span>{
+    <span class="type">NSDictionary</span> * colordic=[<span class="keyword">not</span> userInfo];
+    <span class="type">UIColor</span> * <span class="literal">result</span>=[colordic objectForKey:@<span class="string">"color"</span>];
+    [self.view setBackgroundColor:<span class="literal">result</span>];
+}
+</code></pre><p>好了，现在运行一下应用移动一下滑块试试咯！！！</p>
+<p>注册了观察者，在不用的时候记得要移除。。我的项目用了ARC，但是还是要重写一下dealloc方法.</p>
+<pre><code>-(<span class="keyword">void</span>)dealloc{
+    [[<span class="built_in">NSNotificationCenter</span> defaultCenter] removeObserver:<span class="keyword">self</span> name:<span class="string">@"Notification_Color"</span> object:<span class="literal">nil</span>];
+}
+</code></pre><p>KVO在下一篇中再介绍~</p>
+<h2 id="ヾ(￣▽￣)Bye~Bye~">ヾ(￣▽￣)Bye~Bye~</h2>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2014/10/19/IOS设计模式学习笔记-观察者模式（上）/" data-title="IOS设计模式学习笔记-观察者模式（上） | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/10/17/IOS设计模式学习笔记-委托模式/"  title="IOS设计模式学习笔记-委托模式">
+ <strong>NEXT:</strong><br/> 
+ <span>IOS设计模式学习笔记-委托模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#NSNotification"><span class="toc-number">1.</span> <span class="toc-text">NSNotification</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSNotification简单介绍"><span class="toc-number">1.1.</span> <span class="toc-text">NSNotification简单介绍</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ヾ(￣▽￣)Bye~Bye~"><span class="toc-number"></span> <span class="toc-text">ヾ(￣▽￣)Bye~Bye~</span></a>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/IOS/" title="IOS">IOS<sup>1</sup></a></li>
+		
+			<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		
+			<li><a href="/tags/面试知识/" title="面试知识">面试知识<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello,I&#39;m DangGu.My Github is StormXX. <br/>
+			I&#39;m interested in IOS development and I will share you about this and other knowledge</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/treature" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/StormXX" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://yoursite.com" target="_blank" title="DangGu">DangGu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
