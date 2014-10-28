@@ -1,0 +1,418 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>IOS网络请求学习之NSURLSession(一) | DangGu&#39;s Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="DangGu">
+    
+    <meta name="description" content="IOS网络请求学习之NSURLSession(一)
+介绍
+NSURLSession是苹果在2013 WWDC上新推出的网络请求框架，用来替代NSURLConnection.只支持IOS 7.0以及MAC OS 10.9 之后的版本
+
+和 NSURLConnection 一样，NSURLSession">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="DangGu&#39;s Life" title="DangGu&#39;s Life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="DangGu&#39;s Life">DangGu&#39;s Life</a></h1>
+				<h2 class="blog-motto">My Life is Brilliant</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/10/28/IOS网络请求学习之NSURLSession-一/" title="IOS网络请求学习之NSURLSession(一)" itemprop="url">IOS网络请求学习之NSURLSession(一)</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="DangGu">DangGu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-10-28T10:06:26.000Z" itemprop="datePublished">10月 28 2014</time>
+    Updated:<time datetime="2014-10-28T10:07:36.000Z" itemprop="dateModified">10月 28 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IOS网络请求学习之NSURLSession(一)"><span class="toc-number">1.</span> <span class="toc-text">IOS网络请求学习之NSURLSession(一)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#介绍"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSURLSessionDataTask"><span class="toc-number">1.1.1.</span> <span class="toc-text">NSURLSessionDataTask</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#GET请求"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">GET请求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#POST请求"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">POST请求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#附:JSON解析"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">附:JSON解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#总结"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NSURLSessionDownLoadTask"><span class="toc-number">1.1.2.</span> <span class="toc-text">NSURLSessionDownLoadTask</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#总结-1"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></li></ol>
+		</div>
+		
+		<h2 id="IOS网络请求学习之NSURLSession(一)">IOS网络请求学习之NSURLSession(一)</h2>
+<h3 id="介绍">介绍</h3>
+<p>NSURLSession是苹果在2013 WWDC上新推出的网络请求框架，用来替代NSURLConnection.只支持IOS 7.0以及MAC OS 10.9 之后的版本</p>
+<blockquote>
+<p>和 NSURLConnection 一样，NSURLSession 指的也不仅是同名类 NSURLSession，还包括一系列相互关联的类。NSURLSession 包括了与之前相同的组件，NSURLRequest 与 NSURLCache，但是把 NSURLConnection 替换成了 NSURLSession、NSURLSessionConfiguration 以及 NSURLSessionTask 的 3 个子类：NSURLSessionDataTask，NSURLSessionUploadTask，NSURLSessionDownloadTask。  </p>
+<p>与 NSURLConnection 相比，NSURLsession 最直接的改进就是可以配置每个 session 的缓存，协议，cookie，以及证书策略（credential policy），甚至跨程序共享这些信息。这将允许程序和网络基础框架之间相互独立，不会发生干扰。每个 NSURLSession 对象都由一个 NSURLSessionConfiguration 对象来进行初始化，后者指定了刚才提到的那些策略以及一些用来增强移动设备上性能的新选项。</p>
+<p>NSURLSession 中另一大块就是 session task。它负责处理数据的加载以及文件和数据在客户端与服务端之间的上传和下载。NSURLSessionTask 与 NSURLConnection 最大的相似之处在于它也负责数据的加载，最大的不同之处在于所有的 task 共享其创造者 NSURLSession 这一公共委托者（common delegate）.<br>——摘自obccn.io<a href="http://objccn.io/issue-5-4/" target="_blank" rel="external">《从 NSURLConnection 到 NSURLSession》</a>(侵删)</p>
+</blockquote>
+<h4 id="NSURLSessionDataTask">NSURLSessionDataTask</h4>
+<h5 id="GET请求">GET请求</h5>
+<p>如果仅仅是发送简单的GET请求，可以使用DataTask的dataTaskWithURL:completionHandler:方法。这个方法是返回一个NSURLSessionDataTask实例，不会立即发送请求，需要调用resume方法来执行。</p>
+<pre><code> NSURL <span class="keyword">*</span>URL = [NSURL URLWithString:<span class="comment">@"http://example.com"];</span>
+ NSURLSession <span class="keyword">*</span>session = [NSURLSession sharedSession];
+ NSURLSessionDataTask <span class="keyword">*</span>task = [session dataTaskWithURL:ULR
+                                         completionHandler:
+     ^(NSData <span class="keyword">*</span>data, NSURLResponse <span class="keyword">*</span>response, NSError <span class="keyword">*</span>error) {
+         //callback function
+     }];
+
+ [task resume];
+</code></pre><p>另一种发送请求的方法，为dataTaskWithRequest:completionHandler:。第一个参数为一个NSURLRequest。</p>
+<pre><code>NSURL <span class="keyword">*</span>URL = [NSURL URLWithString:<span class="comment">@"http://example.com"];</span>
+NSURLRequest <span class="keyword">*</span>request = [NSURLRequest requestWithURL:URL];
+
+NSURLSession <span class="keyword">*</span>session = [NSURLSession sharedSession];
+NSURLSessionDataTask <span class="keyword">*</span>task = [session dataTaskWithRequest:request
+                                        completionHandler:
+    ^(NSData <span class="keyword">*</span>data, NSURLResponse <span class="keyword">*</span>response, NSError <span class="keyword">*</span>error) {
+        //callback function
+    }];
+
+[task resume];
+</code></pre><p>GET请求的参数直接加在URL后面.但是如果有中文就需要进行编码.例如(豆瓣图书API):</p>
+<pre><code><span class="constant">NSString * baseURL</span>=@<span class="string">"https://api.douban.com/v2/book/search?"</span>;
+<span class="constant">NSString * param</span>=@<span class="string">"q=python基础教程&amp;count=3"</span>;
+<span class="constant">NSString * urlStr</span>=[baseURL stringByAppendingString:[param stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+</code></pre><h5 id="POST请求">POST请求</h5>
+<p>发送带有参数的POST请求</p>
+<pre><code>NSURL <span class="keyword">*</span> url=[NSURL URLWithString:<span class="comment">@"http://www.example.com"];</span>
+NSMutableURLRequest <span class="keyword">*</span> request=[NSMutableURLRequest requestWithURL:url];
+request.HTTPMethod=<span class="comment">@"GET";</span>
+NSString <span class="keyword">*</span> param=<span class="comment">@"username=张全蛋&amp;password=zhangquandan";</span>
+request.HTTPBody=[param dataUsingEncoding:NSUTF8StringEncoding];
+
+NSURLSession <span class="keyword">*</span>session = [NSURLSession sharedSession];
+NSURLSessionDataTask <span class="keyword">*</span>task = [session dataTaskWithRequest:request
+                                        completionHandler:
+    ^(NSData <span class="keyword">*</span>data, NSURLResponse <span class="keyword">*</span>response, NSError <span class="keyword">*</span>error) {
+        //callback function
+    }];
+
+[task resume];
+</code></pre><h5 id="附:JSON解析">附:JSON解析</h5>
+<p>在dataTaskWithRequest:completionHandler这个方法中的第二个参数是一个block，当请求完成的时候调用这个block.此block的第一个参数为收到的NSData对象。如果这个返回的是一个JSON对象，我们该怎么解析呢？现在的JSONKit暂时不支持IOS8，在IOS8环境下编译会发生错误。所以笔者推荐使用苹果自家的NSJSONSerialization来进行解析。</p>
+<p>在上面callback function的地方加上:</p>
+<pre><code><span class="constant">NSDictionary</span> *json = [<span class="constant">NSJSONSerialization</span> <span class="constant">JSONObjectWithData</span><span class="symbol">:data</span> <span class="symbol">options:</span><span class="number">0</span> <span class="symbol">error:</span><span class="keyword">nil</span>];
+</code></pre><h5 id="总结">总结</h5>
+<p>NSURLSessionDataTask主要是用来从服务器上请求数据，例如JSON和XML。它与UploadTask和DownLoadTaks的区别是它直接返回数据给应用程序，并非通过文件系统，而且这些数据只存储在内存中。</p>
+<h4 id="NSURLSessionDownLoadTask">NSURLSessionDownLoadTask</h4>
+<p>接下来我们用一个下载图片的例子来说明DownLoadTak<br>创建一个project，选择Singe View Application，取名ImageDownLoad((✿◡‿◡)名字不重要啦~重要的是内涵！！！)<br>进入ViewController.h，写下如下代码(笔者偶尔喜欢手写代码呢ヽ(✿ﾟ▽ﾟ)ノ)</p>
+<pre><code><span class="comment">//ViewController.h</span>
+<span class="preprocessor">#import <span class="title">&lt;UIKit/UIKit.h&gt;</span></span>
+
+<span class="class"><span class="keyword">@interface</span> <span class="title">imageDownLoad</span> : <span class="title">UIViewController</span>&lt;<span class="title">NSURLSessionDelegate</span>,<span class="title">NSURLSessionDownloadDelegate</span>&gt;</span>
+
+<span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">UIImageView</span> * imageView;
+<span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) UIProgressView * progressView;
+<span class="keyword">@end</span>
+</code></pre><p>这段代码声明了两个控件，一个是imageView，我们用来放置下载的图片的。一个是ProgressView，用来显示下载的进度,还有，此View要遵循两个协议:NSURLSessionDelegate和NSURLSessionDownloadDelegate。</p>
+<p>进入ViewController.m中，<br>在-(void)viewDidLoad中 初始化两个控件并摆放位置</p>
+<pre><code>[<span class="keyword">self</span><span class="variable">.view</span> setBackgroundColor:[<span class="built_in">UIColor</span> whiteColor]];
+imageView=[[<span class="built_in">UIImageView</span> alloc] initWithFrame:<span class="keyword">self</span><span class="variable">.view</span><span class="variable">.frame</span>];
+progressView=[[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+progressView<span class="variable">.progress</span>=<span class="number">0.0</span>;
+progressView<span class="variable">.center</span>=<span class="keyword">self</span><span class="variable">.view</span><span class="variable">.center</span>;
+[<span class="keyword">self</span><span class="variable">.view</span> addSubview:imageView];
+[<span class="keyword">self</span><span class="variable">.view</span> addSubview:progressView];
+</code></pre><p>接下来创建NSURLSessionDownloadTask对象</p>
+<pre><code><span class="constant">NSURLSessionConfiguration * config</span>=[NSURLSessionConfiguration defaultSessionConfiguration];
+<span class="constant">NSURLSession * session</span>=[NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+<span class="constant">NSURL * url</span>=[NSURL URLWithString:@<span class="string">"http://stormxx-app-image.qiniudn.com/2.pic.jpg"</span>];
+<span class="constant">NSURLSessionDownloadTask * download</span>=[session downloadTaskWithURL:url];
+[download resume];
+</code></pre><p>delegateQueue设置为nil会自动创建一个后台进程，执行delegate里的方法。因为是下载图片，所以最好是在后台进程里操作，最后在主线程更新UI。<br>接下来要实现3个delegate方法:</p>
+<pre><code><span class="pp">- <span class="params">(void)</span>URLSession:<span class="params">(<span class="variable">NSURLSession</span>*)</span>session downloadTask:<span class="params">(<span class="variable">NSURLSessionDownloadTask</span>*)</span>downloadTask didFinishDownloadingToURL:<span class="params">(<span class="variable">NSURL</span>*)</span>location {
+    NSData *data = [NSData dataWithContentsOfURL:location];
+
+    dispatch_async<span class="params">(<span class="function_name">dispatch_get_main_queue</span>(), ^<span class="tuple">{
+        [self.progress<span class="variable">View</span> set<span class="variable">Hidden</span>:<span class="variable">YES</span>];
+        [self.image<span class="variable">View</span> set<span class="variable">Image</span>:[<span class="variable">UIImage</span> image<span class="variable">WithData</span>:data]];
+    }</span>)</span>;
+}
+
+- <span class="params">(void)</span>URLSession:<span class="params">(<span class="variable">NSURLSession</span>*)</span>session downloadTask:<span class="params">(<span class="variable">NSURLSessionDownloadTask</span>*)</span>downloadTask didResumeAtOffset:<span class="params">(int64_t)</span>fileOffset expectedTotalBytes:<span class="params">(int64_t)</span>expectedTotalBytes {
+
+}
+
+- <span class="params">(void)</span>URLSession:<span class="params">(<span class="variable">NSURLSession</span>*)</span>session downloadTask:<span class="params">(<span class="variable">NSURLSessionDownloadTask</span>*)</span>downloadTask didWriteData:<span class="params">(int64_t)</span>bytesWritten totalBytesWritten:<span class="params">(int64_t)</span>totalBytesWritten totalBytesExpectedToWrite:<span class="params">(int64_t)</span>totalBytesExpectedToWrite{
+    float progress = <span class="params">(double)</span>totalBytesWritten / <span class="params">(double)</span>totalBytesExpectedToWrite;
+    dispatch_async<span class="params">(<span class="function_name">dispatch_get_main_queue</span>(), ^<span class="tuple">{
+        [self.progress<span class="variable">View</span> set<span class="variable">Progress</span>:progress];
+    }</span>)</span>;
+}</span>
+</code></pre><p>记住更新UI的时候使用GCD在主线程更新UI。</p>
+<h5 id="总结-1">总结</h5>
+<p>DownloadTask是把下载的数据放在临时目录，- (void)URLSession:ownloadTask:downloadTask didFinishDownloadingToURL:的第三个参数就是下载的数据所在位置。而DataTask是存在内存里。同时DwonLoadTask可以调用cancel方法来取消，也可以在稍后恢复。这些我会在以后的博文中介绍</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/IOS/">IOS</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2014/10/28/IOS网络请求学习之NSURLSession-一/" data-title="IOS网络请求学习之NSURLSession(一) | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/10/19/IOS设计模式学习笔记-观察者模式（下）/"  title="IOS设计模式学习笔记-观察者模式（下）">
+ <strong>NEXT:</strong><br/> 
+ <span>IOS设计模式学习笔记-观察者模式（下）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#IOS网络请求学习之NSURLSession(一)"><span class="toc-number">1.</span> <span class="toc-text">IOS网络请求学习之NSURLSession(一)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#介绍"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NSURLSessionDataTask"><span class="toc-number">1.1.1.</span> <span class="toc-text">NSURLSessionDataTask</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#GET请求"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">GET请求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#POST请求"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">POST请求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#附:JSON解析"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">附:JSON解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#总结"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NSURLSessionDownLoadTask"><span class="toc-number">1.1.2.</span> <span class="toc-text">NSURLSessionDownLoadTask</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#总结-1"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/IOS/" title="IOS">IOS<sup>4</sup></a></li>
+		
+			<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		
+			<li><a href="/tags/面试知识/" title="面试知识">面试知识<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello,I&#39;m DangGu.My Github is StormXX. <br/>
+			I&#39;m interested in IOS development and I will share you about this and other knowledge</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/treature" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/StormXX" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://yoursite.com" target="_blank" title="DangGu">DangGu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
