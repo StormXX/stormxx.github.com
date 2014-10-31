@@ -4,15 +4,15 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>IOS设计模式学习笔记-观察者模式（下） | DangGu&#39;s Life</title>
+    <title>非ARC下对类的初始化和属性的set方法的重载 | DangGu&#39;s Life</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="DangGu">
     
-    <meta name="description" content="这一篇里，我们将介绍用KVO(key-value Observing) 来实现上篇中demo。
-Key-Value Observing
-
-Key-value observing is a mechanism that allows objects to be notified of changes ">
+    <meta name="description" content="一个继承于NSObject的类有一个property value,还有一个初始化的init方法
+@property (retain, nonatomic) NSString * value;
+-(test *)initWithString:(NSString *) nvalue;
+以下是两个方法的实">
     
     
     
@@ -70,15 +70,15 @@ Key-value observing is a mechanism that allows objects to be notified of changes
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/10/19/IOS设计模式学习笔记-观察者模式（下）/" title="IOS设计模式学习笔记-观察者模式（下）" itemprop="url">IOS设计模式学习笔记-观察者模式（下）</a>
+      <a href="/2014/10/31/非ARC下对类的初始化和属性的set方法的重载/" title="非ARC下对类的初始化和属性的set方法的重载" itemprop="url">非ARC下对类的初始化和属性的set方法的重载</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://yoursite.com" title="DangGu">DangGu</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-10-19T12:48:07.000Z" itemprop="datePublished">10月 19 2014</time>
-    Updated:<time datetime="2014-10-19T12:49:59.000Z" itemprop="dateModified">10月 19 2014</time>
+    <time datetime="2014-10-31T00:28:08.000Z" itemprop="datePublished">10月 31 2014</time>
+    Updated:<time datetime="2014-10-31T00:28:42.000Z" itemprop="dateModified">10月 31 2014</time>
     
   </p>
 </header>
@@ -87,50 +87,43 @@ Key-value observing is a mechanism that allows objects to be notified of changes
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">Contents</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#O(∩_∩)O谢谢"><span class="toc-number">1.</span> <span class="toc-text">O(∩_∩)O谢谢</span></a></li></ol>
+		
 		</div>
 		
-		<p>这一篇里，我们将介绍用KVO(key-value Observing) 来实现上篇中demo。</p>
-<p><strong>Key-Value Observing</strong></p>
-<blockquote>
-<p>Key-value observing is a mechanism that allows objects to be notified of changes to specified properties of other objects.</p>
-<p>KVO是一个允许当其他对象的某些属性改变时通知另一些对象的机制</p>
-</blockquote>
-<p>以上是<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html" target="_blank" rel="external">苹果官方文档</a>的解释</p>
-<p>把概念拿到我们的例子中来说，就是，当bgcolor这个类中的redcolor或者bluecolor或者greencolor改变的时候，通知观察者，然后改变view的背景颜色。</p>
-<p>在KVO中，也是实现添加观察者的方法.</p>
-<pre><code><span class="pp">- <span class="params">(void)</span>addObserver:<span class="params">(<span class="variable">NSObject</span> *)</span>observer forKeyPath:<span class="params">(<span class="variable">NSString</span> *)</span>keyPath options:<span class="params">(<span class="variable">NSKeyValueObservingOptions</span>)</span>options context:<span class="params">(void *)</span>context</span>
-</code></pre><p>keyPath ：观察的属性名，在此demo中，我们写color。</p>
-<p>options ：A dictionary that describes the changes that have been made to the value of the property at the key path keyPath relative to object</p>
-<p>observer:观察者，这个观察者必须实现实现一个key-value observing 方法：</p>
-<pre><code><span class="pp">- <span class="params">(void)</span>observeValueForKeyPath:<span class="params">(<span class="variable">NSString</span> *)</span>keyPath ofObject:<span class="params">(id)</span>object change:<span class="params">(<span class="variable">NSDictionary</span> *)</span>change context:<span class="params">(void *)</span>context</span>
-</code></pre><p>当收到通知时，会自动调用该方法。</p>
-<p>使用kvo我们就不需要上一个demo中的重写red,green,blue的set函数。所以我新建一个bgcolor_kvo的Model类。<br>所有代码和bgcolor.h一样，但是不需要重写set代码。<br>然后添加一个方法，</p>
-<pre><code><span class="addition">+(NSSet *)keyPathsForValuesAffectingColor;</span>
-</code></pre><p>在.m中实现这个方法：</p>
-<pre><code>+ (<span class="built_in">NSSet</span> *)keyPathsForValuesAffectingColor
-{
-    <span class="keyword">return</span> [<span class="built_in">NSSet</span> setWithObjects:<span class="string">@"redColor"</span>, <span class="string">@"greenColor"</span>, <span class="string">@"blueColor"</span>, <span class="literal">nil</span>];
-}
-</code></pre><p>这个是属性依赖机制的实现，color 被三个值影响，当这三个值改变的时候，color就会改变，就会告诉观察者，(#`O′) 喂！观察者！我变色了哦！！！</p>
-<p>然后新建一个观察者的viewcontroller.我取得名字叫做kvo。（读者千万不要学我啊！！！我只是为了方便才取的哦！！！(╯‵□′)╯︵┻━┻ 良好的编码规范也是程序员该具备的）<br>这个KVO.h和KVO.m中的代码和上个DEMO中的观察者Notification的基本代码一样。但是观察的地方需要做变动。</p>
-<p>在viewDidLoad中加入：</p>
-<pre><code>[bgcolor <span class="symbol">addObserver:</span><span class="keyword">self</span> <span class="symbol">forKeyPath:</span>@<span class="string">"color"</span> <span class="symbol">options:</span><span class="constant">NSKeyValueObservingOptionInitial</span> <span class="symbol">context:</span><span class="keyword">nil</span>];
-</code></pre><p>因为我们是观察color的变化，所以keypath为color</p>
-<p>然后实现下面的方法：</p>
-<pre><code>-(<span class="keyword">void</span>)observeValueForKeyPath:(<span class="built_in">NSString</span> *)keyPath ofObject:(<span class="keyword">id</span>)object change:(<span class="built_in">NSDictionary</span> *)change context:(<span class="keyword">void</span> *)context{
-    <span class="keyword">if</span>([keyPath isEqualToString:<span class="string">@"color"</span>]){
-        [<span class="keyword">self</span><span class="variable">.view</span> setBackgroundColor:[bgcolor valueForKey:<span class="string">@"color"</span>]];
+		<p>一个继承于NSObject的类有一个property value,还有一个初始化的init方法</p>
+<pre><code><span class="keyword">@property</span> (retain, <span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> * value;
+-(test *)initWithString:(<span class="built_in">NSString</span> *) nvalue;
+</code></pre><p>以下是两个方法的实现</p>
+<pre><code><span class="preprocessor">#import <span class="title">"test.h"</span></span>
+
+<span class="class"><span class="keyword">@implementation</span> <span class="title">test</span></span>
+-(test *)initWithString:(<span class="built_in">NSString</span> *)nvalue{
+    <span class="keyword">self</span>=[<span class="keyword">super</span> init];
+    <span class="keyword">if</span>(<span class="keyword">self</span>!=<span class="literal">nil</span>){
+        <span class="keyword">self</span><span class="variable">.value</span>=nvalue;
     }
+    <span class="keyword">return</span> <span class="keyword">self</span>;
 }
-</code></pre><p>当收到keypath==color的通知时，修改背景颜色，然后获得color的值，赋值给backgroundcolor.!!!</p>
-<p>最后要在deallc中移除这个观察者：</p>
-<pre><code>-(<span class="keyword">void</span>)dealloc{
-    [bgcolor removeObserver:<span class="keyword">self</span> forKeyPath:<span class="string">@"color"</span>];
+<span class="comment">//retain</span>
+-(<span class="keyword">void</span>)setValue:(<span class="built_in">NSString</span> *)value{
+    [value retain];
+    [_value release];
+    _value=value;
 }
-</code></pre><p>大功告成！运行一下试试啦！！！是不是KVO比NSNotification要简单一点呢？这只是KVO的简单运用~以后再写KVO的更详细的用法！~笔者也在学习中~</p>
-<p>本demo的所有代码都在我的<a href="https://github.com/StormXX/IOSPatternLearning" target="_blank" rel="external">github</a>中，repName:IOSPatternLearning</p>
-<h2 id="O(∩_∩)O谢谢">O(∩_∩)O谢谢</h2>
+<span class="keyword">@end</span>
+</code></pre><p>如果属性声明的时候分别是copy assign,那么setValue是下面两种:</p>
+<pre><code><span class="comment">//copy</span>
+-(<span class="keyword">void</span>)setValue:(NSString *)<span class="keyword">value</span>{
+    NSString * temp=[<span class="keyword">value</span> copy];
+    [_value release];
+    _value=temp;
+}
+
+<span class="comment">//assign</span>
+-(<span class="keyword">void</span>)setValue:(NSString *)<span class="keyword">value</span>{
+    _value=<span class="keyword">value</span>;
+}
+</code></pre><p>注：assign一般用于非类的属性赋值，比如int float这些。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -145,7 +138,7 @@ Key-value observing is a mechanism that allows objects to be notified of changes
 
 <div class="article-share" id="share">
 
-  <div data-url="http://yoursite.com/2014/10/19/IOS设计模式学习笔记-观察者模式（下）/" data-title="IOS设计模式学习笔记-观察者模式（下） | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  <div data-url="http://yoursite.com/2014/10/31/非ARC下对类的初始化和属性的set方法的重载/" data-title="非ARC下对类的初始化和属性的set方法的重载 | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -154,19 +147,11 @@ Key-value observing is a mechanism that allows objects to be notified of changes
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2014/10/28/IOS网络请求学习之NSURLSession-一/" title="IOS网络请求学习之NSURLSession(一)">
-  <strong>PREVIOUS:</strong><br/>
-  <span>
-  IOS网络请求学习之NSURLSession(一)</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/10/19/IOS设计模式学习笔记-观察者模式（上）/"  title="IOS设计模式学习笔记-观察者模式（上）">
+<a href="/2014/10/29/Objective-C-KVO/"  title="【转】Objective-C KVO">
  <strong>NEXT:</strong><br/> 
- <span>IOS设计模式学习笔记-观察者模式（上）
+ <span>【转】Objective-C KVO
 </span>
 </a>
 </div>
@@ -179,7 +164,7 @@ Key-value observing is a mechanism that allows objects to be notified of changes
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">Contents</strong>
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#O(∩_∩)O谢谢"><span class="toc-number">1.</span> <span class="toc-text">O(∩_∩)O谢谢</span></a></li></ol>
+  
   </div>
 
 <div id="asidepart">
