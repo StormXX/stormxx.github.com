@@ -1,0 +1,405 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Mantle使用方法小记 | DangGu&#39;s Life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="DangGu">
+    
+    <meta name="description" content="IOS开发中使用的是MVC模式，其中的Model（模型）层常常需要我们编写比较多的代码来把从一些从Web-API fetch的数据进行转换成相应属性，或者是解析JSON等工作。如果要把model层转成硬盘数据，又要遵守NSCoding协议对其进行序列化。重复的代码相当相当相当的多！(╯‵□′)╯︵┻">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="DangGu&#39;s Life" title="DangGu&#39;s Life"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="DangGu&#39;s Life">DangGu&#39;s Life</a></h1>
+				<h2 class="blog-motto">My Life is Brilliant</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/11/21/Mantle使用方法小记/" title="Mantle使用方法小记" itemprop="url">Mantle使用方法小记</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="DangGu">DangGu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-11-21T03:17:34.000Z" itemprop="datePublished">11月 21 2014</time>
+    Updated:<time datetime="2014-11-21T03:18:44.000Z" itemprop="dateModified">11月 21 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+		</div>
+		
+		<p>IOS开发中使用的是MVC模式，其中的Model（模型）层常常需要我们编写比较多的代码来把从一些从Web-API fetch的数据进行转换成相应属性，或者是解析JSON等工作。如果要把model层转成硬盘数据，又要遵守NSCoding协议对其进行序列化。重复的代码相当相当相当的多！(╯‵□′)╯︵┻━┻</p>
+<p>不知道是不是Github的工程师忍不了了。。所以他们整出了一个第三方库用来做这些事情，它就是Mantle!</p>
+<p>接下来用一个根据ISBN获取图书信息的<a href="http://developers.douban.com/wiki/?title=book_v2#get_isbn_book" target="_blank" rel="external">豆瓣API</a>来做一个示例：</p>
+<p>首先建立Model层，新建一个文件，叫做bookModel,继承自MTLModel,并遵守 \<mtljsonserializing> 协议.</mtljsonserializing></p>
+<pre><code><span class="comment">//bookModel.h</span>
+<span class="preprocessor">#import <span class="title">"MTLModel.h"</span></span>
+<span class="preprocessor">#import <span class="title">&lt;Mantle/Mantle.h&gt;</span></span>
+
+<span class="class"><span class="keyword">@interface</span> <span class="title">bookModel</span> : <span class="title">MTLModel</span>&lt;<span class="title">MTLJSONSerializing</span>&gt;</span>
+
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> * title;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> * author;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSNumber</span> * pages;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> * price;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> * publisher;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> * image;
+<span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> * translator;
+<span class="keyword">@end</span>
+</code></pre><blockquote>
+<p>豆瓣API是返回json的，返回的参数比较多，大家可以自己去<a href="http://developers.douban.com/wiki/?title=book_v2" target="_blank" rel="external">豆瓣图书API</a>查询</p>
+</blockquote>
+<p>我们使用的字段为:</p>
+<ul>
+<li>title 图书名称 (string)</li>
+<li>author 图书作者 (array)</li>
+<li>pages 图书页数 (string)</li>
+<li>price 图书价格 (string)</li>
+<li>publisher 出版社 (string)</li>
+<li>image 图书封面（中等尺寸） (string)</li>
+<li>translator 图书译者 (array)</li>
+</ul>
+<p>注意到 author和translator在返回的json中是array类型，而我们声明的属性中是NSString类型，这需要我们在从JSON转换到Model的时候进行转换。</p>
+<p>使用Mantle的时候，在.m 的实现文件中，一定要实现一个方法：<code>-(NSDictionary *)JSONKeyPathsByPropertyKey</code></p>
+<pre><code>+(<span class="built_in">NSDictionary</span> *)JSONKeyPathsByPropertyKey{
+    <span class="keyword">return</span> @{
+             <span class="string">@"title"</span>:<span class="string">@"title"</span>,
+             <span class="string">@"author"</span>:<span class="string">@"author"</span>,
+             <span class="string">@"pages"</span>:<span class="string">@"pages"</span>,
+             <span class="string">@"price"</span>:<span class="string">@"price"</span>,
+             <span class="string">@"publisher"</span>:<span class="string">@"publisher"</span>,
+             <span class="string">@"image"</span>:<span class="string">@"image"</span>,
+             <span class="string">@"translator"</span>:<span class="string">@"translator"</span>,
+    };
+}
+</code></pre><p>左边对应着.h中的属性名，右边对应着json里的key。这样，在转换的时候就会自动根据这里的映射关系进行转换。</p>
+<p>接下来，说到上面的从array转换到string的问题，Mantle支持两种方法进行转换。</p>
+<p>一种是 <code>+ (NSValueTransformer *)JSONTransformerForKey:(NSString *)key</code></p>
+<p>例如:</p>
+<pre><code>+ (NSValueTransformer *)JSONTransformerForKey:(<span class="built_in">NSString</span> *)key{
+    <span class="keyword">if</span>([key isEquealToString:<span class="string">@"author"</span>] || [key isEquealToString:<span class="string">@"translator"</span>]){
+        <span class="keyword">return</span> [MTLValueTransformer reversibleTransformerWithForwardBlock:^<span class="keyword">id</span>(<span class="built_in">NSArray</span> *values) {
+            <span class="built_in">NSMutableString</span> * authorStr=[<span class="built_in">NSMutableString</span> stringWithString:[values firstObject]];
+            <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;[values count]; i++) {
+                [authorStr appendFormat:<span class="string">@"、%@"</span>,[values objectAtIndex:i]];
+            }
+        <span class="keyword">return</span> authorStr;
+        } reverseBlock:^<span class="keyword">id</span>(<span class="built_in">NSString</span> * str) {
+                NSCharacterSet * splitchar=[NSCharacterSet characterSetWithCharactersInString:<span class="string">@"、"</span>];
+                <span class="keyword">return</span> [str componentsSeparatedByCharactersInSet:splitchar];
+        }];
+    }
+}
+</code></pre><p>如果有很多字段需要进行转换的话，if语句会非常，非常，非常的长！不利于代码的阅读和维护。所以Mantle还提供了另外一个方法:<code>+ (NSValueTransformer *)&lt;key&gt;JSONTransformer</code> 这个类似于KVO里的<code>+ (NSSet *)keyPathsForValuesAffecting&lt;key&gt;</code> key为属性名。</p>
+<p>于是这个函数就可以变成：</p>
+<pre><code>+(NSValueTransformer *)authorJSONTransformer{
+    <span class="keyword">return</span> [MTLValueTransformer reversibleTransformerWithForwardBlock:^<span class="keyword">id</span>(<span class="built_in">NSArray</span> *values) {
+        <span class="built_in">NSMutableString</span> * authorStr=[<span class="built_in">NSMutableString</span> stringWithString:[values firstObject]];
+        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;[values count]; i++) {
+            [authorStr appendFormat:<span class="string">@"、%@"</span>,[values objectAtIndex:i]];
+        }
+        <span class="keyword">return</span> authorStr;
+    } reverseBlock:^<span class="keyword">id</span>(<span class="built_in">NSString</span> * str) {
+        NSCharacterSet * splitchar=[NSCharacterSet characterSetWithCharactersInString:<span class="string">@"、"</span>];
+        <span class="keyword">return</span> [str componentsSeparatedByCharactersInSet:splitchar];
+    }];
+}
+
++(NSValueTransformer *)translatorJSONTransformer{
+    <span class="keyword">return</span> [bookModel authorJSONTransformer];
+}
+</code></pre><p>只需要短短几行代码和函数实现，就可以实现json到Model的转换。</p>
+<p>在需要进行JSON转Model的地方，一句话就可以做到：</p>
+<pre><code>bookModel *book=[<span class="constant">MTLJSONAdapter</span> <span class="symbol">modelOfClass:</span>[bookModel <span class="class"><span class="keyword">class</span>] <span class="title">fromJSONDictionary</span>:<span class="title">jsonObject</span> <span class="title">error</span>:<span class="title">nil</span>];</span>
+</code></pre><p>如果想把Model转换为json, 只需要调用:</p>
+<pre><code><span class="attribute">NSDictionary *jsonDictionary </span>=<span class="string"> [MTLJSONAdapter JSONDictionaryFromModel:book];</span>
+</code></pre><p>附：json返回的字段中如果带有date的，一般会是Unix时间戳，一长串数字。在转换的时候，我们需要转换成NSDate对象。以下为转换代码:</p>
+<pre><code>+ (NSValueTransformer *)dateJSONTransformer
+{
+    <span class="keyword">return</span> [MTLValueTransformer reversibleTransformerWithForwardBlock:
+            ^<span class="keyword">id</span>(<span class="built_in">NSNumber</span> *datenumber)
+            {
+                <span class="built_in">NSTimeInterval</span> secs = [datenumber doubleValue];
+                <span class="keyword">return</span> [<span class="built_in">NSDate</span> dateWithTimeIntervalSince1970:secs];
+            } reverseBlock:^<span class="keyword">id</span>(<span class="built_in">NSDate</span> *d) {
+                <span class="keyword">return</span> @([d timeIntervalSince1970]);
+            }];
+}
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/IOS/">IOS</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2014/11/21/Mantle使用方法小记/" data-title="Mantle使用方法小记 | DangGu&#39;s Life" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/10/31/非ARC下对类的初始化和属性的set方法的重载/"  title="非ARC下对类的初始化和属性的set方法的重载">
+ <strong>NEXT:</strong><br/> 
+ <span>非ARC下对类的初始化和属性的set方法的重载
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/IOS/" title="IOS">IOS<sup>8</sup></a></li>
+		
+			<li><a href="/tags/数据结构/" title="数据结构">数据结构<sup>1</sup></a></li>
+		
+			<li><a href="/tags/面试知识/" title="面试知识">面试知识<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello,I&#39;m DangGu.My Github is StormXX. <br/>
+			I&#39;m interested in IOS development and I will share you about this and other knowledge</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/treature" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/StormXX" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://yoursite.com" target="_blank" title="DangGu">DangGu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
